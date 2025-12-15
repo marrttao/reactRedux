@@ -33,6 +33,7 @@ function App() {
   }, [amount, rates, selected]);
 
   function handleConvertOnce() {
+    if (!amount) return;
     Object.entries(results).forEach(([code, val]) => {
       dispatch(pushConversion({ amount: +amount, currency: code, result: val, time: new Date().toISOString() }));
     });
@@ -73,19 +74,23 @@ function App() {
 
       <div style={{ marginTop: 12 }}>
         <h3>Results</h3>
-        {Object.keys(results).length === 0 && <div>No results</div>}
-        <ul>
-          {Object.entries(results).map(([c, v]) => (
-            <li key={c}>{c}: {v}</li>
-          ))}
-        </ul>
+        {Object.keys(results).length === 0 ? <div>No results</div> : (
+          <ul>
+            {Object.entries(results).map(([c, v]) => (
+              <li key={c}>{c}: {v}</li>
+            ))}
+          </ul>
+        )}
+        <div style={{ marginTop: 8 }}>
+          <button disabled={!amount || Object.keys(results).length === 0} onClick={handleConvertOnce}>Convert</button>
+        </div>
       </div>
 
       <div style={{ marginTop: 12 }}>
         <h3>History (last 5)</h3>
         <ul>
           {history.map((h, idx) => (
-            <li key={idx}>{h.time} — {h.amount} UAH → {h.currency}: {h.result}</li>
+            <li key={idx}>{new Date(h.time).toLocaleString()} — {h.amount} UAH → {h.currency}: {h.result}</li>
           ))}
         </ul>
       </div>
